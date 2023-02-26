@@ -1645,7 +1645,7 @@ let render = ()=>{
 render()
 
 // copy solution button
-document.querySelector(".nospoiler").addEventListener("click", () => {
+document.querySelector(".nospoiler").addEventListener("click", async () => {
   let s = ""
 
   s += "dicele"
@@ -1665,11 +1665,11 @@ document.querySelector(".nospoiler").addEventListener("click", () => {
     else s += "&"
     s += "eqc="+eqCount
   }
-  navigator.clipboard.writeText(s)
+  await navigator.clipboard.writeText(s)
   alert("Copied to clipboard!")
 })
 
-document.querySelector(".spoiler").addEventListener("click", () => {
+document.querySelector(".spoiler").addEventListener("click", async () => {
   let s = ""
 
   s += "dicele"
@@ -1689,6 +1689,6 @@ document.querySelector(".spoiler").addEventListener("click", () => {
     else s += "&"
     s += "eqc="+eqCount
   }
-  navigator.clipboard.writeText(s)
+  await navigator.clipboard.writeText(s)
   alert("Copied to clipboard!")
 })
