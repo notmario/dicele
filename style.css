@@ -1,0 +1,276 @@
+@import url('https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@300&display=swap');
+:root {
+  font-size: min(2.2svh, 1.5svw);
+}
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Londrina Solid', cursive;
+  color: white;
+}
+body {
+  background-color: #111432;
+  width: 100svw;
+  height: 100svh;
+}
+body.win {
+  background-color: #113215;
+}
+
+h1 {
+  font-size: 4rem;
+  text-align: center;
+  padding-top: 2rem;
+}
+p {
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.equipment {
+  /* grid 4 columns */
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, 12rem);
+  grid-gap: 1rem;
+  padding: 1rem;
+
+  /* center */
+  justify-content: center;
+
+}
+
+.eq {
+  background-color: black;
+  width: 14rem;
+  height: 11rem;
+  padding: 0.5rem;
+  position: relative;
+
+  /* user-select: none; */
+}
+.eq h2 {
+  text-align: center;
+  font-size: 1.8rem;
+
+  text-transform: uppercase;
+
+  z-index: 0;
+}
+.eq p {
+  text-align: center;
+  font-size: 1.25rem;
+  /* bottom */
+  position: absolute;
+  bottom: 2rem;
+  transform: translate(0, 50%);
+  /* height: 3.5rem; */
+  width: calc(100% - 1rem);
+  /* vertical center text */
+}
+.eq .slots {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+.eq .slots .slot {
+  border: 0.15rem solid white;
+  width: 5rem;
+  height: 3.25rem;
+  text-align: center;
+  padding-top: 1.75rem;
+  font-size: 1.5rem;
+  position: relative;
+}
+.eq .slots .slot.doubles::after {
+  content: "";
+  position: absolute;
+  top: 30%;
+  left: calc(60% + 0.65rem);
+  width: 80%;
+  height: 25%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 0.4rem solid white;
+  border-bottom: 0.4rem solid white;
+}
+.eq .total {
+  text-align: center;
+  font-size: 1rem;
+}
+.eq.selected .slots .slot {
+  background-color: #ffffff7f;
+}
+.eq.green {
+  background-color: #246438;
+}
+.eq.green-upgraded {
+  background: linear-gradient(180deg, #30a154 0%, #30a154 24%, rgba(36,100,56,1) 24%, rgba(36,100,56,1) 100%);
+}
+.eq.orange {
+  background-color: #6c411d;
+}
+.eq.orange-upgraded {
+  background: linear-gradient(180deg, #b26221 0%, #b26221 24%, rgba(108,65,29,1) 24%, rgba(108,65,29,1) 100%);
+}
+.eq.hidden {
+  /* invisible */
+  opacity: 0;
+}
+.dice {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+.dice .die {
+  background-color: white;
+  color: black;
+  width: 5rem;
+  height: 4.2rem;
+  text-align: center;
+  padding-top: 0.8rem;
+  font-size: 3rem;
+  user-select: none;
+}
+.dice .die.selected {
+  background-color: #ffffff7f;
+}
+.dice .reset {
+  background-color: #1d216c;
+  color: white;
+  width: 5rem;
+  height: 4.8rem;
+  text-align: center;
+  padding-top: 0.2rem;
+  font-size: 3rem;
+  user-select: none;
+}
+.win .dice .reset {
+  background-color: #1d6c21;
+}
+body:not(.win) .copy {
+  display: none;
+}
+.copy {
+  text-align: center;
+  font-size: 1.5rem;
+  padding-top: 0rem;
+}
+
+a.randomtoggle {
+  /* background-color: #1d216c; */
+  color: white;
+  text-align: center;
+  padding-top: 0.2rem;
+  font-size: 2rem;
+  user-select: none;
+  position: absolute;
+  left: 1rem;
+  top: 0.5rem;
+}
+a.two {
+  /* background-color: #1d216c; */
+  color: white;
+  text-align: center;
+  padding-top: 0.2rem;
+  font-size: 2rem;
+  user-select: none;
+  position: absolute;
+  left: 1rem;
+  top: 2.5rem;
+}
+a.four {
+  /* background-color: #1d216c; */
+  color: white;
+  text-align: center;
+  padding-top: 0.2rem;
+  font-size: 2rem;
+  user-select: none;
+  position: absolute;
+  left: 2.5rem;
+  top: 2.5rem;
+}
+a.six {
+  /* background-color: #1d216c; */
+  color: white;
+  text-align: center;
+  padding-top: 0.2rem;
+  font-size: 2rem;
+  user-select: none;
+  position: absolute;
+  left: 4rem;
+  top: 2.5rem;
+}
+a.eight {
+  /* background-color: #1d216c; */
+  color: white;
+  text-align: center;
+  padding-top: 0.2rem;
+  font-size: 2rem;
+  user-select: none;
+  position: absolute;
+  left: 5.5rem;
+  top: 2.5rem;
+}
+a.selected {
+  color: #7f7f7f;
+  text-decoration: none;
+  cursor: default;
+}
+
+/* styled differently for mobile */
+@media (max-width: 600px) {
+  :root {
+    font-size: min(1.7vw, 1.5vh);
+  }
+  .equipment {
+    /* grid-template-rows: none; */
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, 15rem);
+  }
+  a.randomtoggle {
+    font-size: 3rem;
+    top: 0rem;
+  }
+
+  a.two, a.four, a.six, a.eight {
+    font-size: 3rem;
+    top: 3rem;
+  }
+  a.four {
+    left: 3rem;
+  }
+  a.six {
+    left: 5rem;
+  }
+  a.eight {
+    left: 7rem;
+  }
+}
+/* landscape */
+@media (max-height: 600px) {
+  :root {
+    font-size: min(2.2vw, 1.7vh);
+  }
+  a.randomtoggle {
+    font-size: 3rem;
+    top: 0rem;
+  }
+
+  a.two, a.four, a.six, a.eight {
+    font-size: 3rem;
+    top: 3rem;
+  }
+  a.four {
+    left: 3rem;
+  }
+  a.six {
+    left: 5rem;
+  }
+  a.eight {
+    left: 7rem;
+  }
+}
