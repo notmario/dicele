@@ -1243,7 +1243,7 @@ let globalSeed = Math.floor(Math.random()*2**32-1)
 
 // seed url
 if (urlParams.has("seed")) {
-  globalSeed = urlParams.get("seed")
+  globalSeed = parseInt(urlParams.get("seed"))
   useDailySeed = false
 }
 
