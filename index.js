@@ -1244,6 +1244,7 @@ let globalSeed = Math.floor(Math.random()*2**32-1)
 // seed url
 if (urlParams.has("seed")) {
   globalSeed = urlParams.get("seed")
+  useDailySeed = false
 }
 
 let generatePuzzle = (count, seeded)=> {
@@ -1662,7 +1663,7 @@ document.querySelector(".nospoiler").addEventListener("click", () => {
   if (eqCount != 4) {
     if (useDailySeed) s += "?"
     else s += "&"
-    s += "eq="+eqCount
+    s += "eqc="+eqCount
   }
   navigator.clipboard.writeText(s)
   alert("Copied to clipboard!")
@@ -1686,7 +1687,7 @@ document.querySelector(".spoiler").addEventListener("click", () => {
   if (eqCount != 4) {
     if (useDailySeed) s += "?"
     else s += "&"
-    s += "eq="+eqCount
+    s += "eqc="+eqCount
   }
   navigator.clipboard.writeText(s)
   alert("Copied to clipboard!")
