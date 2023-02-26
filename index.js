@@ -1657,7 +1657,7 @@ document.querySelector(".nospoiler").addEventListener("click", () => {
     let m = movesMade[i]
     s += "\n-> " + m.equipment + "@" + m.used.join("") + " > " + m.after.sort((a,b)=>a-b).join("");
   }
-  s += "\nplay it here! https://dicele.web.app/"
+  s += "\nplay it here! https://dicele.netlify.app/"
   if (!useDailySeed) s += "?seed="+globalSeed
   if (eqCount != 4) {
     if (useDailySeed) s += "?"
@@ -1681,7 +1681,7 @@ document.querySelector(".spoiler").addEventListener("click", () => {
     let m = movesMade[i]
     s += "\n||-> " + m.equipment + "@" + m.used.join("") + " > " + m.after.sort((a,b)=>a-b).join("")+"||";
   }
-  s += "\nplay it here! https://dicele.web.app/"
+  s += "\nplay it here! https://dicele.netlify.app/"
   if (!useDailySeed) s += "?seed="+globalSeed
   if (eqCount != 4) {
     if (useDailySeed) s += "?"
