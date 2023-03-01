@@ -6,6 +6,8 @@ if (urlParams.has('eqc')) {
   eqCount = parseInt(urlParams.get('eqc'))
 }
 
+let mana = 0;
+
 // select eqc
 if (eqCount == 2) document.querySelector(".two").classList.add("selected")
 if (eqCount == 4) document.querySelector(".four").classList.add("selected")
@@ -32,6 +34,14 @@ if (urlParams.has('random')) {
   if (eqCount != 4) document.querySelector(".four").href = "./"
   if (eqCount != 6) document.querySelector(".six").href = "./?eqc=6"
   if (eqCount != 8) document.querySelector(".eight").href = "./?eqc=8"
+}
+
+let globalSeed = Math.floor(Math.random()*2**32-1)
+
+// seed url
+if (urlParams.has("seed")) {
+  globalSeed = parseInt(urlParams.get("seed"))
+  useDailySeed = false
 }
 
 const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
@@ -1035,6 +1045,39 @@ let equipment = {
       return moves;
     }
   },
+  "sine wave-": {
+    "name": "Sine Wave-",
+    "color": "green-downgraded",
+    "slots": ["DOUBLES","DOUBLES"],
+    "description": "Both dice values -1",
+    "onUse": (d, otherdice) => {
+      if (d[0] > 1)
+        otherdice.push(d[0]-1)
+      if (d[1] > 1)
+        otherdice.push(d[1]-1)
+      return otherdice
+    },
+    "genReverseMoves": (mydice) => {
+      let moves = [];
+      // matching dice
+      for (let i = 1; i < 6; i++) {
+        if (mydice.includes(i) && mydice.indexOf(i) != mydice.lastIndexOf(i)) {
+          let move = {
+            "equipment": "sine wave-",
+            "before": mydice.slice(),
+            "used": [i+1,i+1],
+            "after": mydice.slice()
+          }
+          move.before.splice(move.before.indexOf(i), 1)
+          move.before.splice(move.before.indexOf(i), 1)
+          move.before.push(i+1)
+          move.before.push(i+1)
+          moves.push(move)
+        }
+      }
+      return moves;
+    }
+  },
   // "giant spatula": {
   //   "name": "Giant Spatula",
   //   "color": "green",
@@ -1208,6 +1251,70 @@ let equipment = {
       return moves;
     }
   },
+  "saw wave+": {
+    "name": "Saw Wave+",
+    "color": "green-upgraded",
+    "slots": ["TOTAL7", "TOTAL7"],
+    "description": "Roll two 6s",
+    "onUse": (d, otherdice) => {
+      otherdice.push(6);
+      otherdice.push(6);
+      return otherdice
+    },
+    "genReverseMoves": (mydice) => {
+      // if we have a 6, we can use it to combine two dice
+      let moves = [];
+      if (mydice.includes(6) && mydice.lastIndexOf(6) != mydice.indexOf(6)) {
+        // 1,6, 2,5, 3,4
+        for (let i = 1; i < 4; i++) {
+          let move = {
+            "equipment": "saw wave+",
+            "before": mydice.slice(),
+            "used": [i, 7-i],
+            "after": mydice.slice()
+          }
+          move.before.splice(move.before.indexOf(6), 1)
+          move.before.splice(move.before.lastIndexOf(6), 1)
+          move.before.push(i)
+          move.before.push(7-i)
+          moves.push(move)
+        }
+      }
+      return moves;
+    }
+  },
+  "saw wave-": {
+    "name": "Saw Wave-",
+    "color": "green-downgraded",
+    "slots": ["TOTAL7", "TOTAL7"],
+    "description": "Roll two 1s",
+    "onUse": (d, otherdice) => {
+      otherdice.push(1);
+      otherdice.push(1);
+      return otherdice
+    },
+    "genReverseMoves": (mydice) => {
+      // if we have a 6, we can use it to combine two dice
+      let moves = [];
+      if (mydice.includes(1) && mydice.lastIndexOf(1) != mydice.indexOf(1)) {
+        // 1,6, 2,5, 3,4
+        for (let i = 2; i < 5; i++) {
+          let move = {
+            "equipment": "saw wave-",
+            "before": mydice.slice(),
+            "used": [i, 7-i],
+            "after": mydice.slice()
+          }
+          move.before.splice(move.before.indexOf(1), 1)
+          move.before.splice(move.before.lastIndexOf(1), 1)
+          move.before.push(i)
+          move.before.push(7-i)
+          moves.push(move)
+        }
+      }
+      return moves;
+    }
+  },
   "splitula": {
     "name": "Splitula",
     "color": "green",
@@ -1236,20 +1343,609 @@ let equipment = {
       }
       return moves;
     }
+  },
+  "splitula+": {
+    "name": "Splitula+",
+    "color": "green-upgraded",
+    "slots": ["MIN3"],
+    "description": "Flip the dice, and<br/>then duplicate it",
+    "onUse": (d, otherdice) => {
+      otherdice.push(7-d);
+      otherdice.push(7-d);
+      return otherdice
+    },
+    "genReverseMoves": (mydice) => {
+      let moves = [];
+      for (let i = 1; i < 5; i++) {
+        if (!(mydice.includes(i) && mydice.indexOf(i) !== mydice.lastIndexOf(i))) continue;
+        let move = {
+          "equipment": "splitula+",
+          "before": mydice.slice(),
+          "used": [7-i],
+          "after": mydice.slice()
+        }
+        move.before.splice(move.before.indexOf(i), 1)
+        move.before.splice(move.before.indexOf(i), 1)
+        move.before.push(7-i)
+        moves.push(move)
+      }
+      return moves;
+    }
+  },
+  "puppy paws": {
+    "name": "Puppy Paws",
+    "color": "green",
+    "slots": ["TOTAL5", "TOTAL5"],
+    "description": "Roll two fives",
+    "onUse": (d, otherdice) => {
+      otherdice.push(5);
+      otherdice.push(5);
+      return otherdice
+    },
+    "genReverseMoves": (mydice) => {
+      let moves = [];
+      if (mydice.includes(5) && mydice.indexOf(5) !== mydice.lastIndexOf(5)) {
+        for (let i = 1; i < 3; i++) {
+          let move = {
+            "equipment": "puppy paws",
+            "before": mydice.slice(),
+            "used": [i, 5-i],
+            "after": mydice.slice()
+          }
+          move.before.splice(move.before.indexOf(5), 1)
+          move.before.splice(move.before.indexOf(5), 1)
+          move.before.push(i)
+          move.before.push(5-i)
+          moves.push(move)
+        }
+      }
+      return moves;
+    }
+  },
+  "scrap bump": {
+    "name": "Scrap Bump",
+    "color": "gray",
+    "slots": ["MAX5"],
+    "description": "Dice value +1",
+    "onUse": (d, otherdice) => {
+      otherdice.push(d[0]+1);
+      return otherdice
+    },
+    "genReverseMoves": (mydice) => {
+      let moves = [];
+      for (let i = 2; i < 7; i++) {
+        if (mydice.includes(i)) {
+          let move = {
+            "equipment": "scrap bump",
+            "before": mydice.slice(),
+            "used": [i-1],
+            "after": mydice.slice()
+          }
+          move.before.splice(move.before.indexOf(i), 1)
+          move.before.push(i-1)
+          moves.push(move)
+        }
+      }
+      return moves;
+    }
+  },
+  "scrap book": {
+    "name": "Scrap Book",
+    "color": "gray",
+    "slots": ["ODD"],
+    "description": "Duplicate the dice",
+    "onUse": (d, otherdice) => {
+      otherdice.push(d[0]);
+      otherdice.push(d[0]);
+      return otherdice
+    },
+    "genReverseMoves": (mydice) => {
+      let moves = [];
+      for (let i = 1; i < 7; i++) {
+        if (i % 2 === 0) continue;
+        if (mydice.includes(i) && mydice.indexOf(i) !== mydice.lastIndexOf(i)) {
+          let move = {
+            "equipment": "scrap book",
+            "before": mydice.slice(),
+            "used": [i],
+            "after": mydice.slice()
+          }
+          move.before.splice(move.before.indexOf(i), 1)
+          move.before.splice(move.before.indexOf(i), 1)
+          move.before.push(i)
+          moves.push(move)
+        }
+      }
+      return moves;
+    }
+  },
+  "duplicate": {
+    "name": "Duplicate",
+    "color": "green",
+    "slots": ["MIN4"],
+    "description": "Duplicate the dice",
+    "onUse": (d, otherdice) => {
+      otherdice.push(d[0]);
+      otherdice.push(d[0]);
+      return otherdice
+    },
+    "genReverseMoves": (mydice) => {
+      let moves = [];
+      for (let i = 4; i < 7; i++) {
+        if (mydice.includes(i) && mydice.indexOf(i) !== mydice.lastIndexOf(i)) {
+          let move = {
+            "equipment": "duplicate",
+            "before": mydice.slice(),
+            "used": [i],
+            "after": mydice.slice()
+          }
+          move.before.splice(move.before.indexOf(i), 1)
+          move.before.splice(move.before.indexOf(i), 1)
+          move.before.push(i)
+          moves.push(move)
+        }
+      }
+      return moves;
+    }
+  },
+  "square wave": {
+    "name": "Square Wave",
+    "color": "green",
+    "slots": ["DOUBLES", "DOUBLES"],
+    "description": "Flip both dice",
+    "onUse": (d, otherdice) => {
+      otherdice.push(7-d[0]);
+      otherdice.push(7-d[1]);
+      return otherdice
+    },
+    "genReverseMoves": (mydice) => {
+      let moves = [];
+      for (let i = 1; i < 7; i++) {
+        if (mydice.includes(i) && mydice.indexOf(i) !== mydice.lastIndexOf(i)) {
+          let move = {
+            "equipment": "square wave",
+            "before": mydice.slice(),
+            "used": [i],
+            "after": mydice.slice()
+          }
+          move.before.splice(move.before.indexOf(i), 1)
+          move.before.splice(move.before.indexOf(i), 1)
+          move.before.push(7-i)
+          move.before.push(7-i)
+          moves.push(move)
+        }
+      }
+      return moves;
+    }
+  },
+  "scraptula": {
+    "name": "Scraptula",
+    "color": "gray",
+    "slots": ["MAX4"],
+    "description": "Flip the dice",
+    "onUse": (d, otherdice) => {
+      otherdice.push(7-d[0]);
+      return otherdice
+    },
+    "genReverseMoves": (mydice) => {
+      let moves = [];
+      for (let i = 3; i < 7; i++) {
+        if (mydice.includes(i)) {
+          let move = {
+            "equipment": "scraptula",
+            "before": mydice.slice(),
+            "used": [7-i],
+            "after": mydice.slice()
+          }
+          move.before.splice(move.before.indexOf(i), 1)
+          move.before.push(7-i)
+          moves.push(move)
+        }
+      }
+      return moves;
+    }
+  },
+  // "magnifying glass": {
+  //   "name": "Magnifying Glass",
+  //   "color": "cyan",
+  //   "slots": ["MAX3"],
+  //   "description": "Double dice value<br/>(✨1: triple instead)",
+  //   "onUse": (d, otherdice) => {
+  //     if (mana >= 1) {
+  //       if (d[0]*3 > 6) {
+  //         otherdice.push(6);
+  //         otherdice.push(d[0]*3-6)
+  //       }
+  //       else
+  //         otherdice.push(d[0]*3);
+  //       mana -= 1;
+  //     } else {
+  //       otherdice.push(d[0]*2);
+  //     }
+  //     return otherdice
+  //   },
+  //   "genReverseMoves": (mydice) => {
+  //     let moves = [];
+  //     // non mana spending
+  //     // for (let i = 2; i < 7; i++) {
+  //     //   if (i % 2 === 1) continue;
+  //     //   if (mydice.includes(i)) {
+  //     //     let move = {
+  //     //       "equipment": "magnifying glass",
+  //     //       "before": mydice.slice(),
+  //     //       "used": [i/2],
+  //     //       "after": mydice.slice()
+  //     //     }
+  //     //     move.before.splice(move.before.indexOf(i), 1)
+  //     //     move.before.push(i/2)
+  //     //     moves.push(move)
+  //     //   }
+  //     // }
+  //     // mana spending
+  //     if (mydice.includes(3)) {
+  //       let move = {
+  //         "equipment": "magnifying glass",
+  //         "before": mydice.slice(),
+  //         "used": [1],
+  //         "after": mydice.slice(),
+  //         "mana": -1
+  //       }
+  //       move.before.splice(move.before.indexOf(3), 1)
+  //       move.before.push(1)
+  //       moves.push(move)
+  //     }
+  //     if (mydice.includes(6)) {
+  //       let move = {
+  //         "equipment": "magnifying glass",
+  //         "before": mydice.slice(),
+  //         "used": [2],
+  //         "after": mydice.slice(),
+  //         "mana": -1
+  //       }
+  //       move.before.splice(move.before.indexOf(6), 1)
+  //       move.before.push(2)
+  //       moves.push(move)
+  //     }
+  //     if (mydice.includes(6) && mydice.includes(3)) {
+  //       let move = {
+  //         "equipment": "magnifying glass",
+  //         "before": mydice.slice(),
+  //         "used": [3],
+  //         "after": mydice.slice(),
+  //         "mana": -1
+  //       }
+  //       move.before.splice(move.before.indexOf(6), 1)
+  //       move.before.splice(move.before.indexOf(3), 1)
+  //       move.before.push(3)
+  //       moves.push(move)
+  //     }
+  //     return moves;
+  //   }
+  // },
+  // "mana charge": {
+  //   "name": "Mana Charge",
+  //   "color": "cyan",
+  //   "slots": ["MAX4"],
+  //   "description": "Gain ✨☐ mana",
+  //   "onUse": (d, otherdice) => {
+  //     mana += d[0];
+  //     return otherdice
+  //   },
+  //   "genReverseMoves": (mydice) => {
+  //     let moves = [];
+  //     for (let i = 1; i < 5; i++) {
+  //       if (mydice.includes(i)) {
+  //         let move = {
+  //           "equipment": "mana charge",
+  //           "before": mydice.slice(),
+  //           "used": [i],
+  //           "after": mydice.slice(),
+  //           "mana": i
+  //         }
+  //         move.before.push(i)
+  //         moves.push(move)
+  //       }
+  //     }
+  //     return moves;
+  //   }
+  // },
+  // "daffodil": {
+  //   "name": "Daffodil",
+  //   "color": "yellow",
+  //   "slots": ["MIN4"],
+  //   "description": "Dice value -1,<br/>Start with +✨1",
+  //   "onUse": (d, otherdice) => {
+  //     if (d[0] > 1) otherdice.push(d[0]-1);
+  //     return otherdice
+  //   },
+  //   "genReverseMoves": (mydice) => {
+  //     let moves = [];
+  //     for (let i = 3; i < 6; i++) {
+  //       if (mydice.includes(i)) {
+  //         let move = {
+  //           "equipment": "daffodil",
+  //           "before": mydice.slice(),
+  //           "used": [i+1],
+  //           "after": mydice.slice(),
+  //           "mana": 1
+  //         }
+  //         move.before.splice(move.before.indexOf(i), 1)
+  //         move.before.push(i+1)
+  //         moves.push(move)
+  //       }
+  //     }
+  //     return moves;
+  //   },
+  //   "mana_bonus": 1
+  // },
+  // "carnation": {
+  //   "name": "Carnation",
+  //   "color": "yellow",
+  //   "slots": ["MIN3"],
+  //   "description": "Flip the dice,<br/>Start with +✨1",
+  //   "onUse": (d, otherdice) => {
+  //     otherdice.push(7-d[0]);
+  //     return otherdice
+  //   },
+  //   "genReverseMoves": (mydice) => {
+  //     let moves = [];
+  //     for (let i = 1; i < 4; i++) {
+  //       if (mydice.includes(i)) {
+  //         let move = {
+  //           "equipment": "carnation",
+  //           "before": mydice.slice(),
+  //           "used": [7-i],
+  //           "after": mydice.slice(),
+  //           "mana": 1
+  //         }
+  //         move.before.splice(move.before.indexOf(i), 1)
+  //         move.before.push(7-i)
+  //         moves.push(move)
+  //       }
+  //     }
+  //     return moves;
+  //   },
+  //   "mana_bonus": 1
+  // },
+  // "sunflower": {
+  //   "name": "Sunflower",
+  //   "color": "yellow",
+  //   "slots": ["MAX3"],
+  //   "description": "Flip the dice,<br/>Gain ✨☐ mana",
+  //   "onUse": (d, otherdice) => {
+  //     otherdice.push(7-d[0]);
+  //     mana += d[0];
+  //     return otherdice
+  //   },
+  //   "genReverseMoves": (mydice) => {
+  //     let moves = [];
+  //     for (let i = 5; i < 7; i++) {
+  //       if (mydice.includes(i)) {
+  //         let move = {
+  //           "equipment": "sunflower",
+  //           "before": mydice.slice(),
+  //           "used": [7-i],
+  //           "after": mydice.slice(),
+  //           "mana": 7-i
+  //         }
+  //         move.before.splice(move.before.indexOf(i), 1)
+  //         move.before.push(7-i)
+  //         moves.push(move)
+  //       }
+  //     }
+  //     return moves;
+  //   }
+  // },
+  // "pot plant": {
+  //   "name": "Pot Plant",
+  //   "color": "yellow",
+  //   "slots": ["MAX4"],
+  //   "description": "Duplicate the dice, on 4,<br/>gain ✨3 instead",
+  //   "onUse": (d, otherdice) => {
+  //     if (d[0] == 4) mana += 3;
+  //     else {
+  //       otherdice.push(d[0]);
+  //       otherdice.push(d[0]);
+  //     }
+  //     return otherdice
+  //   },
+  //   "genReverseMoves": (mydice) => {
+  //     let moves = [];
+  //     for (let i = 1; i < 4; i++) {
+  //       if (mydice.includes(i) && mydice.indexOf(i) != mydice.lastIndexOf(i)) {
+  //         let move = {
+  //           "equipment": "pot plant",
+  //           "before": mydice.slice(),
+  //           "used": [i],
+  //           "after": mydice.slice(),
+  //         }
+  //         move.before.splice(move.before.indexOf(i), 1)
+  //         moves.push(move)
+  //       }
+  //     }
+  //     // gain 3
+  //     let move = {
+  //       "equipment": "pot plant",
+  //       "before": mydice.slice(),
+  //       "used": [4],
+  //       "after": mydice.slice(),
+  //       "mana": 3
+  //     }
+  //     move.before.push(4)
+  //     moves.push(move)
+  //     return moves;
+  //   }
+  // },
+  // "disco ball": {
+  //   "name": "Disco Ball",
+  //   "color": "yellow",
+  //   "slots": ["MAX2"],
+  //   "description": "Duplicate the dice,<br/>✨2: flip the result",
+  //   "onUse": (d, otherdice) => {
+  //     if (mana >= 2) {
+  //       mana -= 2;
+  //       otherdice.push(7-d[0]);
+  //       otherdice.push(7-d[0]);
+  //     } else {
+  //       otherdice.push(d[0]);
+  //       otherdice.push(d[0]);
+  //     }
+  //     return otherdice
+  //   },
+  //   "genReverseMoves": (mydice) => {
+  //     // non mana
+  //     let moves = [];
+  //     for (let i = 1; i < 3; i++) {
+  //       if (mydice.includes(i) && mydice.lastIndexOf(i) != mydice.indexOf(i)) {
+  //         let move = {
+  //           "equipment": "disco ball",
+  //           "before": mydice.slice(),
+  //           "used": [i],
+  //           "after": mydice.slice(),
+  //         }
+  //         move.before.splice(move.before.indexOf(i), 1)
+  //         moves.push(move)
+  //       }
+  //     }
+  //     // mana
+  //     for (let i = 5; i < 7; i++) {
+  //       if (mydice.includes(i) && mydice.lastIndexOf(i) != mydice.indexOf(i)) {
+  //         let move = {
+  //           "equipment": "disco ball",
+  //           "before": mydice.slice(),
+  //           "used": [7-i],
+  //           "after": mydice.slice(),
+  //           "mana": -2
+  //         }
+  //         move.before.splice(move.before.indexOf(i), 1)
+  //         move.before.splice(move.before.indexOf(i), 1)
+  //         move.before.push(7-i)
+  //         moves.push(move)
+  //       }
+  //     }
+  //     return moves;
+  //   }
+  // },
+  "5patula": {
+    "name": "5patula",
+    "color": "green",
+    "slots": ["MAX5"],
+    "description": "Flip the dice as if it somehow had 5 sides",
+    "onUse": (d, otherdice) => {
+      otherdice.push(6-d[0]);
+      return otherdice
+    },
+    "genReverseMoves": (mydice) => {
+      let moves = [];
+      for (let i = 1; i < 6; i++) {
+        if (mydice.includes(i)) {
+          let move = {
+            "equipment": "5patula",
+            "before": mydice.slice(),
+            "used": [6-i],
+            "after": mydice.slice(),
+          }
+          move.before.splice(move.before.indexOf(i), 1)
+          move.before.push(6-i)
+          moves.push(move)
+        }
+      }
+      return moves;
+    }
+  },
+  "change machine": {
+    "name": "Change Machine",
+    "color": "green",
+    "slots": ["TOTAL4","TOTAL4"],
+    "description": "Roll four ones",
+    "onUse": (d, otherdice) => {
+      otherdice.push(1);
+      otherdice.push(1);
+      otherdice.push(1);
+      otherdice.push(1);
+      return otherdice
+    },
+    "genReverseMoves": (mydice) => {
+      let moves = [];
+      let count = mydice.join("").split("1").length - 1;
+
+      if (count >= 4) {
+        // 1, 3
+        let move = {
+          "equipment": "change machine",
+          "before": mydice.slice(),
+          "used": [1,3],
+          "after": mydice.slice(),
+        }
+        move.before.splice(move.before.indexOf(1), 1)
+        move.before.splice(move.before.indexOf(1), 1)
+        move.before.splice(move.before.indexOf(1), 1)
+        move.before.splice(move.before.indexOf(1), 1)
+        move.before.push(3)
+        move.before.push(1)
+        moves.push(move)
+
+        // 2, 2
+        move = {
+          "equipment": "change machine",
+          "before": mydice.slice(),
+          "used": [2,2],
+          "after": mydice.slice(),
+        }
+        move.before.splice(move.before.indexOf(1), 1)
+        move.before.splice(move.before.indexOf(1), 1)
+        move.before.splice(move.before.indexOf(1), 1)
+        move.before.splice(move.before.indexOf(1), 1)
+        move.before.push(2)
+        move.before.push(2)
+      }
+      return moves;
+    }
+  },
+  "budge": {
+    "name": "Budge",
+    "color": "green",
+    "slots": ["NORMAL"],
+    "description": "Odd: value +1<br/>Even: value -1",
+    "onUse": (d, otherdice) => {
+      if (d[0] % 2 == 0) {
+        otherdice.push(d[0]-1);
+      } else {
+        otherdice.push(d[0]+1);
+      }
+      return otherdice
+    },
+    "genReverseMoves": (mydice) => {
+      let moves = [];
+      for (let i = 1; i < 7; i++) {
+        if (mydice.includes(i)) {
+          let move = {
+            "equipment": "budge",
+            "before": mydice.slice(),
+            "used": [],
+            "after": mydice.slice(),
+          }
+          if (i % 2 == 0) {
+            move.before.splice(move.before.indexOf(i), 1)
+            move.before.push(i-1)
+            move.used = [i-1]
+          } else {
+            move.before.splice(move.before.indexOf(i), 1)
+            move.before.push(i+1)
+            move.used = [i+1]
+          }
+          moves.push(move)
+        }
+      }
+      return moves;
+    }
   }
 }
 
-let globalSeed = Math.floor(Math.random()*2**32-1)
+let generatePuzzle = (count, seeded, attempts = 0)=> {
 
-// seed url
-if (urlParams.has("seed")) {
-  globalSeed = parseInt(urlParams.get("seed"))
-  useDailySeed = false
-}
-
-let generatePuzzle = (count, seeded)=> {
   // seeded random based on current day
-  let seed = 37 + diffDays * 11 + eqCount * 29
+  let seed = 37 + diffDays * 11 + eqCount * 29 + attempts * 13
   seed = seed * 78374872834 - 32
   seed = seed % 2**32-1
   seed = seed * 7823872834 - 32
@@ -1260,11 +1956,12 @@ let generatePuzzle = (count, seeded)=> {
   seed = seed % 2**32-1
 
   if (seeded) Math.seedrandom(seed)
-  else Math.seedrandom(globalSeed)
+  else Math.seedrandom(globalSeed + attempts * 13)
 
   let dice = [1,2,3,4,5,6];
 
   let realMoves = [];
+  let gen_mana = 0;
 
   for (let i = 0; i < count; i++) {
     // generate all possible reverse moves
@@ -1286,21 +1983,28 @@ let generatePuzzle = (count, seeded)=> {
       // well shit. 
       // pick the move with the fewest dice
       consmoves = moves.sort((a,b) => a.before.length - b.before.length)
-      consmoves = consmoves.filter(move => move.before.length == consmoves[0].before.length)
+      consmoves = consmoves.filter(move => move.before.length <= consmoves[0].before.length + 2)
       // consmoves = moves.slice()
     }
-    if (i===0) {
+    
+    if (i === 0) {
       // debug mode
-      // consmoves = moves.filter(move => move.equipment === "saw wave")
+      // consmoves = consmoves.filter(move => move.equipment === "disco ball")
     }
     // pick a random move
     let move = consmoves[Math.floor(Math.random() * consmoves.length)]
 
     realMoves.unshift(move)
+
+    if (move === undefined) {
+      // reset and try again.
+      console.log("reset")
+      return generatePuzzle(count, seeded, attempts+1)
+    }
+    gen_mana += move.mana ?? 0
     // apply the move
     dice = move.before.sort((a,b) => a-b)
   }
-
   for (move in realMoves) {
     // console.log(
     //   realMoves[move].before.join("") + " " + 
@@ -1313,6 +2017,41 @@ let generatePuzzle = (count, seeded)=> {
   return [realMoves, dice]
 }
 
+// let hist = [];
+
+// let hash_state = (state) => {
+//   let s = state.map(r=>r.equipment).sort().join("")+"|"+state.map(r=>r.before.sort((a,b)=>a-b).join("")).sort().join("")
+//   // simple hash
+//   let hash = 0;
+//   for (let i = 0; i < s.length; i++) {
+//     hash = s.charCodeAt(i) + ((hash << 5) - hash);
+//   }
+//   return hash;
+// }
+
+// let exhaustive_generatePuzzle = (count, realMoves=[], dice=[1,2,3,4,5,6]) => {
+//   // generate all possible puzzles. oh god.
+//   let this_count = 0;
+//   if (count === 0)
+//     return 1;
+//   // if (hist.length > 100000)
+//   //   return 0;
+//   let moves = [];
+//   for (let eq in equipment) {
+//     moves = moves.concat(equipment[eq].genReverseMoves(dice.slice()))
+//   }
+//   // generate ALL possible moves
+//   for (let move of moves) {
+//     // check if we already have this state in our history
+//     if (hash_state(realMoves.concat([move])) in hist)
+//       continue;
+//     hist.push(hash_state(realMoves.concat([move])))
+//     console.log("hist", hist.length)
+//     this_count += exhaustive_generatePuzzle(count-1, realMoves.concat([move]), move.before.slice())
+//   }
+//   return this_count;
+// }
+
 let [realMoves,dice] = generatePuzzle(eqCount, useDailySeed)
 let movesMade = [];
 
@@ -1320,12 +2059,26 @@ let eq = realMoves.map(move => move.equipment)
 eq = eq.sort((a,b) => a>b)
 realMoves = "nice try"; // no peeking!
 
+// mana bonus
+mana = 0;
+for (let i = 0; i < eq.length; i++) {
+  if (eq[i] === null) continue;
+  mana += equipment[eq[i]].mana_bonus ?? 0;
+}
+
 let reset = () => {
   [realMoves,dice] = generatePuzzle(eqCount, useDailySeed)
   eq = realMoves.map(move => move.equipment)
   eq = eq.sort((a,b) => a>b)
   realMoves = "nice try"; // no peeking!
   movesMade = [];
+
+  // mana bonus
+  mana = 0;
+  for (let i = 0; i < eq.length; i++) {
+    if (eq[i] === null) continue;
+    mana += equipment[eq[i]].mana_bonus ?? 0;
+  }
 }
 
 let eqdiv = document.querySelector(".equipment")
@@ -1334,6 +2087,12 @@ let selectedEq = null;
 let selectedDice = [];
 
 let render = ()=>{
+  // mana div
+  let manadiv = document.querySelector(".mana")
+  manadiv.innerHTML = ""
+  if (mana > 0) {
+    manadiv.innerHTML = "(✨" + mana + ")"
+  }
   eqdiv.innerHTML = ""
   for (let i = 0; i < eq.length; i++) {
     if (eq[i] === null) {
@@ -1422,8 +2181,16 @@ let render = ()=>{
               if (dice[selectedDice[d]] % 2 == 1)
                 continue;
 
+            if (slot === "MAX2")
+              if (dice[selectedDice[d]] <= 2)
+                continue;
+
             if (slot === "MAX3")
               if (dice[selectedDice[d]] <= 3)
+                continue;
+
+            if (slot === "MAX4")
+              if (dice[selectedDice[d]] <= 4)
                 continue;
 
             if (slot === "MAX5")
@@ -1494,7 +2261,7 @@ let render = ()=>{
           let used = selectedDice.map(i => dice[i])
           
           movesMade.push({
-            equipment: eq[i],
+            equipment: eq[selectedEq],
             used: used.slice(),
             before: dice.slice(),
             after: dice.slice()
@@ -1553,7 +2320,9 @@ let render = ()=>{
         if (selectedDice.length >= equipment[eq[selectedEq]].slots.length) return;
         // max5, max3, all that
         if (equipment[eq[selectedEq]].slots[selectedDice.length] == "MAX5" && dice[i] > 5) return;
+        if (equipment[eq[selectedEq]].slots[selectedDice.length] == "MAX4" && dice[i] > 4) return;
         if (equipment[eq[selectedEq]].slots[selectedDice.length] == "MAX3" && dice[i] > 3) return;
+        if (equipment[eq[selectedEq]].slots[selectedDice.length] == "MAX2" && dice[i] > 2) return;
         if (equipment[eq[selectedEq]].slots[selectedDice.length] == "ODD" && dice[i] % 2 == 0) return;
         if (equipment[eq[selectedEq]].slots[selectedDice.length] == "EVEN" && dice[i] % 2 == 1) return;
         if (equipment[eq[selectedEq]].slots[selectedDice.length] == "MIN2" && dice[i] == 1) return;
@@ -1593,7 +2362,7 @@ let render = ()=>{
       if (selectedDice.length == equipment[eq[selectedEq]].slots.length) {
         let used = selectedDice.map(i => dice[i])
         movesMade.push({
-          equipment: eq[i],
+          equipment: eq[selectedEq],
           used: used.slice(),
           before: dice.slice(),
           after: dice.slice()

@@ -27,6 +27,11 @@ p {
   text-align: center;
 }
 
+.mana {
+  font-size: 1rem;
+  text-align: center;
+}
+
 .equipment {
   /* grid 4 columns */
   display: grid;
@@ -109,11 +114,32 @@ p {
 .eq.green-upgraded {
   background: linear-gradient(180deg, #30a154 0%, #30a154 24%, rgba(36,100,56,1) 24%, rgba(36,100,56,1) 100%);
 }
+.eq.green-downgraded {
+  background: linear-gradient(180deg, #246438 0%, #246438 24%, #2a5036 24%, #2a5036 100%);
+}
 .eq.orange {
   background-color: #6c411d;
 }
 .eq.orange-upgraded {
   background: linear-gradient(180deg, #b26221 0%, #b26221 24%, rgba(108,65,29,1) 24%, rgba(108,65,29,1) 100%);
+}
+.eq.gray {
+  background-color: #3a3a46;
+}
+.eq.gray-upgraded {
+  background: linear-gradient(180deg, #6c6c7f 0%, #6c6c7f 24%, rgba(58,58,70,1) 24%, rgba(58,58,70,1) 100%);
+}
+.eq.cyan {
+  background-color: #358d9f;
+}
+.eq.cyan-upgraded {
+  background: linear-gradient(180deg, #4db8c4 0%, #4db8c4 24%, rgba(53,141,159,1) 24%, rgba(53,141,159,1) 100%);
+}
+.eq.yellow {
+  background-color: #877f11;
+}
+.eq.yellow-upgraded {
+  background: linear-gradient(180deg, #c4b81d 0%, #c4b81d 24%, rgba(135,127,17,1) 24%, rgba(135,127,17,1) 100%);
 }
 .eq.hidden {
   /* invisible */
@@ -273,4 +299,16 @@ a.selected {
   a.eight {
     left: 7rem;
   }
+}
+
+.version {
+  /* background-color: #1d216c; */
+  color: white;
+  text-align: center;
+  padding-top: 0.2rem;
+  font-size: 1.5rem;
+  user-select: none;
+  position: absolute;
+  left: 1rem;
+  bottom: 0.5rem;
 }
